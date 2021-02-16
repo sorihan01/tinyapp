@@ -1,3 +1,5 @@
+//You can run me using npm start
+
 const express = require("express");
 const app = express();
 const PORT = 8080;
@@ -71,5 +73,5 @@ app.get("/u/:shortURL", (req, res) => {
 
 
 app.listen(PORT, () => {
-  console.log(`tinyapp is running on PORT: ${PORT}`);
+  console.log(`(ﾉ◕ヮ◕)ﾉ*:･ﾟ✧ tinyapp is running on PORT: ${PORT}`)
 });
