@@ -1,10 +1,11 @@
-//You can run me using npm start
+// run server: npm start
 
 const express = require("express");
 const app = express();
 const PORT = 8080;
 
-//middleware
+// middleware
+
 const bodyParser = require("body-parser");
 const morgan = require('morgan');
 app.use(bodyParser.urlencoded({ extended: true })); //formats the form POST requests
@@ -15,11 +16,13 @@ app.use(morgan('dev'));
 
 // 🌍 GLOBAL SCOPE VARIABLES
 // object placeholder of pre-loaded URLs
+
 const urlDatabase = {
   "b2xVn2": "http://www.lighthouselabs.ca",
   "9sm5xK": "http://www.google.com"
 };
 // generate random string of 6 characters
+
 const generateRandomString = () => {
   const crypto = require("crypto");
   const id = crypto.randomBytes(3).toString('hex');
@@ -27,11 +30,11 @@ const generateRandomString = () => {
 };
 
 /*  ❕ keep in mind that routes should be ordered from most specific to least specific ❕  */
-
 // 🟩 get /urls...
-app.get("/", (req, res) => {
-  res.send("Hello!");
-});
+
+// app.get("/", (req, res) => {
+//   res.send("Hello!");
+// });
 app.get('/urls', (req, res) => {
   const templateVars = { urls: urlDatabase };
   res.render('urls_index', templateVars);
@@ -42,6 +45,7 @@ app.get("/urls/new", (req, res) => {
 
 
 // 🟥  post 
+
 // user submits longURL
 app.post("/urls", (req, res) => {
   let shortURL = generateRandomString();
@@ -51,15 +55,15 @@ app.post("/urls", (req, res) => {
 });
 // user clicks on DELETE button
 app.post("/urls/:shortURL/delete", (req, res) => {
-  let {shortURL} = req.params
-delete urlDatabase[shortURL]
+  let { shortURL } = req.params
+  delete urlDatabase[shortURL]
   console.log(urlDatabase); // log updated object
   res.redirect(`/urls`);
 });
 // user clicks on UPDATE button
 app.post("/urls/:shortURL/update", (req, res) => {
   // this line is same as req.params.shortURL
-  let {shortURL} = req.params;
+  let { shortURL } = req.params;
   //update the key value with the new body
   urlDatabase[shortURL] = req.body.longURL;
   console.log(urlDatabase); // log updated object
@@ -75,7 +79,7 @@ app.get('/urls/:shortURL', (req, res) => {
     res.render('urls_show', templateVars);
   } else {
     //if the shortURL does not exist, redirects to form
-    res.send('this short URL does not exist! 🤷🏽‍♂️');
+    res.send('this short URL does not exist! 🤷🏽‍♂️'); //TODO redirect button
   }
 });
 app.get("/u/:shortURL", (req, res) => {
@@ -89,4 +93,4 @@ app.get("/u/:shortURL", (req, res) => {
 
 
 
-app.listen(PORT, () => {console.log(`(ﾉ◕ヮ◕)ﾉ*:･ﾟ✧ tinyapp is running on PORT: ${PORT}`)});
+app.listen(PORT, () => { console.log(`(ﾉ◕ヮ◕)ﾉ*:･ﾟ✧ tinyapp is running on PORT: ${PORT}`) });
