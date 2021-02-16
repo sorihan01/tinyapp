@@ -41,7 +41,8 @@ app.get("/urls/new", (req, res) => {
 });
 
 
-// POST - user submits longURL
+// POST
+// user submits longURL
 app.post("/urls", (req, res) => {
   let longURL = req.body.longURL;
   let shortURL = generateRandomString();
@@ -49,6 +50,14 @@ app.post("/urls", (req, res) => {
   console.log(urlDatabase); // log updated object
   res.redirect(`/urls/${shortURL}`);
 });
+// user clicks on DELETE button
+app.post("/urls/:shortURL/delete", (req, res) => {
+  let {shortURL} = req.params
+delete urlDatabase[shortURL]
+  console.log(urlDatabase); // log updated object
+  res.redirect(`/urls`);
+});
+
 
 /* specific shortURL GET*/
 app.get('/urls/:shortURL', (req, res) => {
