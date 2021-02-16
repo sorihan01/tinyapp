@@ -41,19 +41,28 @@ app.get("/urls/new", (req, res) => {
 });
 
 
-// POST
+// POST POST POST POST POST POST POST
 // user submits longURL
 app.post("/urls", (req, res) => {
-  let longURL = req.body.longURL;
   let shortURL = generateRandomString();
-  urlDatabase[shortURL] = longURL;
+  urlDatabase[shortURL] = req.body.longURL;
   console.log(urlDatabase); // log updated object
   res.redirect(`/urls/${shortURL}`);
+
 });
 // user clicks on DELETE button
 app.post("/urls/:shortURL/delete", (req, res) => {
   let {shortURL} = req.params
 delete urlDatabase[shortURL]
+  console.log(urlDatabase); // log updated object
+  res.redirect(`/urls`);
+});
+// user clicks on UPDATE button
+app.post("/urls/:shortURL/update", (req, res) => {
+  // this line is same as req.params.shortURL
+  let {shortURL} = req.params;
+  //update the key value with the new body
+  urlDatabase[shortURL] = req.body.longURL;
   console.log(urlDatabase); // log updated object
   res.redirect(`/urls`);
 });
@@ -81,6 +90,4 @@ app.get("/u/:shortURL", (req, res) => {
 
 
 
-app.listen(PORT, () => {
-  console.log(`(ﾉ◕ヮ◕)ﾉ*:･ﾟ✧ tinyapp is running on PORT: ${PORT}`)
-});
+app.listen(PORT, () => {console.log(`(ﾉ◕ヮ◕)ﾉ*:･ﾟ✧ tinyapp is running on PORT: ${PORT}`)});
