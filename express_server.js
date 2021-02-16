@@ -21,7 +21,8 @@ const urlDatabase = {
   "b2xVn2": "http://www.lighthouselabs.ca",
   "9sm5xK": "http://www.google.com"
 };
-// generate random string of 6 characters
+
+// function: generates random key
 
 const generateRandomString = () => {
   const crypto = require("crypto");
@@ -32,9 +33,6 @@ const generateRandomString = () => {
 /*  ❕ keep in mind that routes should be ordered from most specific to least specific ❕  */
 // 🟩 get /urls...
 
-// app.get("/", (req, res) => {
-//   res.send("Hello!");
-// });
 app.get('/urls', (req, res) => {
   const templateVars = { urls: urlDatabase };
   res.render('urls_index', templateVars);
@@ -48,25 +46,25 @@ app.get("/urls/new", (req, res) => {
 
 // user submits longURL
 app.post("/urls", (req, res) => {
-  let shortURL = generateRandomString();
+  const shortURL = generateRandomString();
   urlDatabase[shortURL] = req.body.longURL;
-  console.log(urlDatabase); // log updated object
+  // console.log(urlDatabase); // log updated object
   res.redirect(`/urls/${shortURL}`);
 });
 // user clicks on DELETE button
 app.post("/urls/:shortURL/delete", (req, res) => {
-  let { shortURL } = req.params
+  const { shortURL } = req.params
   delete urlDatabase[shortURL]
-  console.log(urlDatabase); // log updated object
+  // console.log(urlDatabase); // log updated object
   res.redirect(`/urls`);
 });
 // user clicks on UPDATE button
 app.post("/urls/:shortURL/update", (req, res) => {
   // this line is same as req.params.shortURL
-  let { shortURL } = req.params;
+  const { shortURL } = req.params;
   //update the key value with the new body
   urlDatabase[shortURL] = req.body.longURL;
-  console.log(urlDatabase); // log updated object
+  // console.log(urlDatabase); // log updated object
   res.redirect(`/urls`);
 });
 
