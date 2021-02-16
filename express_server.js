@@ -39,30 +39,35 @@ app.get("/urls/new", (req, res) => {
 });
 
 
-
-// post /urls
-
+// POST - user submits long URL
 app.post("/urls", (req, res) => {
   let longURL = req.body.longURL;
   let shortURL = generateRandomString();
   urlDatabase[shortURL] = longURL;
   console.log(urlDatabase);  // log the updated object
-  res.redirect(`/urls/${shortURL}`);         // Respond with 'Ok' (we will replace this)
+  res.redirect(`/urls/${shortURL}`);
 });
 
-
+/* specific shortURL GET*/
 app.get('/urls/:shortURL', (req, res) => {
-  const templateVars = { shortURL: req.params.shortURL, longURL: urlDatabase[req.params.shortURL] };
-  res.render('urls_show', templateVars);
+
+  if (req.params.shortURL in urlDatabase) {
+    const templateVars = { shortURL: req.params.shortURL, longURL: urlDatabase[req.params.shortURL] };
+    res.render('urls_show', templateVars);
+  } else {
+    //if the shortURL does not exist, redirects to form
+    res.redirect('/urls/new')
+  }
 });
 
-// app.get("/urls.json", (req, res) => {
-//   res.json(urlDatabase);
-// });
+app.get("/u/:shortURL", (req, res) => {
+  const longURL = urlDatabase[req.params.shortURL];
+  res.redirect(longURL);
+});
 
-// app.get("/hello", (req, res) => {
-//   res.send("<html><body>Hello <b>World</b></body></html>\n");
-// });
+
+
+
 
 
 app.listen(PORT, () => {
