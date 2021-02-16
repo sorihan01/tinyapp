@@ -14,7 +14,7 @@ app.get("/", (req, res) => {
   res.send("Hello!");
 });
 
-// object placeholder of predetermined URLs
+// object placeholder of pre-loaded URLs
 const urlDatabase = {
   "b2xVn2": "http://www.lighthouselabs.ca",
   "9sm5xK": "http://www.google.com"
@@ -22,28 +22,24 @@ const urlDatabase = {
 
 // generate random string of 6 characters
 const generateRandomString = () => {
-  var crypto = require("crypto");
-  var id = crypto.randomBytes(3).toString('hex');
-  return id
+  const crypto = require("crypto");
+  const id = crypto.randomBytes(3).toString('hex');
+  return id;
 };
 
-/*
- ❕ keep in mind that routes should be ordered from most specific to least specific ❕ 
-*/
+/*  ❕ keep in mind that routes should be ordered from most specific to least specific ❕  */
 
-// get /urls
-
+// get /urls...
 app.get('/urls', (req, res) => {
   const templateVars = { urls: urlDatabase };
   res.render('urls_index', templateVars);
 });
-
 app.get("/urls/new", (req, res) => {
   res.render("urls_new");
 });
 
 
-// POST - user submits long URL
+// POST - user submits longURL
 app.post("/urls", (req, res) => {
   let longURL = req.body.longURL;
   let shortURL = generateRandomString();
@@ -60,10 +56,9 @@ app.get('/urls/:shortURL', (req, res) => {
     res.render('urls_show', templateVars);
   } else {
     //if the shortURL does not exist, redirects to form
-    res.send('this short URL does not exist! 🤷🏽‍♂️')
+    res.send('this short URL does not exist! 🤷🏽‍♂️');
   }
 });
-
 app.get("/u/:shortURL", (req, res) => {
   const longURL = urlDatabase[req.params.shortURL];
   res.redirect(longURL);
