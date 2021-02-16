@@ -1,10 +1,14 @@
 const express = require("express");
 const app = express();
-const bodyParser = require("body-parser");
-const PORT = 8080; // default port 8080
+const PORT = 8080;
 
+//middleware
+const bodyParser = require("body-parser");
+const morgan = require('morgan');
 app.use(bodyParser.urlencoded({ extended: true })); //formats the form POST requests
 app.set("view engine", "ejs");
+app.use(morgan('dev'));
+
 
 app.get("/", (req, res) => {
   res.send("Hello!");
@@ -44,7 +48,7 @@ app.post("/urls", (req, res) => {
   let longURL = req.body.longURL;
   let shortURL = generateRandomString();
   urlDatabase[shortURL] = longURL;
-  console.log(urlDatabase);  // log the updated object
+  console.log(urlDatabase); // log updated object
   res.redirect(`/urls/${shortURL}`);
 });
 
@@ -56,7 +60,7 @@ app.get('/urls/:shortURL', (req, res) => {
     res.render('urls_show', templateVars);
   } else {
     //if the shortURL does not exist, redirects to form
-    res.redirect('/urls/new')
+    res.send('this short URL does not exist! 🤷🏽‍♂️')
   }
 });
 
@@ -70,6 +74,7 @@ app.get("/u/:shortURL", (req, res) => {
 
 
 
+
 app.listen(PORT, () => {
-  console.log(`Example app listening on port ${PORT}!`);
+  console.log(`tinyapp is running on PORT: ${PORT}`);
 });
