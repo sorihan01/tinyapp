@@ -20,10 +20,11 @@
       </div>
       <% } else { %>
 
-        <form class="form-inline" action="/login" method="POST">
-          <input class="form-control" type="text" name="username" placeholder="Username"
-            style="width: 175px; margin: 0.2em">
-          <button type="submit" class="btn btn-dark">Log In</button>
+        <form class="form-inline" action="/login" method="GET">
+          <button type="submit" class="btn btn-outline-dark" style= "padding: 0.2em; margin: 0.3em">Log In</button>
+        </form>
+        <form class="form-inline" action="/register" method="GET">
+          <button type="submit" class="btn btn-outline-primary" style= "padding: 0.2em; margin: 0.3em">Register</button>
         </form>
         <% } %>
   </nav>

@@ -154,7 +154,9 @@ so that I can learn what content they like.
 
 
 NEW LOGIN PAGE
-- create a new template with login.ejs with login form
-  - should send a POST request to /login
 
-- Create a GET /login endpoint that responds with this new login form template.
+Update the header
+- update header to link to the login and registration page
+- remove login form
+- If no cookie, show register / login link
+-else if nothing changes
