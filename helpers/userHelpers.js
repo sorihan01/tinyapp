@@ -19,7 +19,6 @@ const passwordMatching = (database, password) => {
 
 const fetchUserID = (database, email) => {
   for (let key in database) {
-    console.log(database[key].email)
     return (database[key]["email"] === email) ? database[key].id : false;
   }
 };

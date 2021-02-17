@@ -52,7 +52,7 @@ const users = { // USER DATABASE
 
 // HOME
 app.get('/', (req, res) => {
-  res.send('please log in')
+  res.redirect('login')
 });
 
 // REGISTER
@@ -129,16 +129,17 @@ const email = req.body.email;
 const password = req.body.password;
 if(emailExists(users, email) && passwordMatching(users, password)) {
   res.cookie('user_id', fetchUserID(users, email));
+  // console.log('email: ' + email + ' pswrd: ' + password)
   res.redirect(`/urls`);
+} else{
+  // console.log('NO USER!! email: ' + email + ' pswrd: ' + password)
+  res.sendStatus(403);
 }
-res.sendStatus(403);
 });
 
 app.post("/logout", (req, res) => {
   res.clearCookie('user_id'); //, {path: '/'}
   res.redirect(`/urls`);
-
-
 });
 
 // /REGISTER
