@@ -149,3 +149,12 @@ so that I can learn what content they like.
  
  ## deletes cookie
 - []redirects to /urls
+
+
+
+
+NEW LOGIN PAGE
+- create a new template with login.ejs with login form
+  - should send a POST request to /login
+
+- Create a GET /login endpoint that responds with this new login form template.

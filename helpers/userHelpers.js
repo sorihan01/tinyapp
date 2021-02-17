@@ -11,11 +11,17 @@ const emailExists = (database, email) => {
   }
 };
 
-const passwordMatching = (database, email, password) => (database[email].password === password) ? true : false;
+const passwordMatching = (database, password) => {
+  for (let key in database) {
+    return (database[key]["password"] === password) ? true : false;
+  }
+};
 
-const fetchUser = (database, email) => database[email] ? database[email] : {};
+const fetchUserID = (database, email) => {
+  for (let key in database) {
+    console.log(database[key].email)
+    return (database[key]["email"] === email) ? database[key].id : false;
+  }
+};
 
-
-
-
-module.exports = { generateRandomString, emailExists, passwordMatching, fetchUser };
+module.exports = { generateRandomString, emailExists, passwordMatching, fetchUserID };

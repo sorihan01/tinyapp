@@ -16,7 +16,7 @@ app.use(cookieParser());
 
 // helper functions
 
-const { generateRandomString, emailExists, passwordMatching, fetchUser } = require('./helpers/userHelpers');
+const { generateRandomString, emailExists, passwordMatching, fetchUserID } = require('./helpers/userHelpers');
 
 
 
@@ -32,10 +32,10 @@ const urlDatabase = { // URL DATABASE
 };
 
 const users = { // USER DATABASE
-  "userRandomID": {
-    id: "userRandomID",
-    email: "user@example.com",
-    password: "purple-monkey-dinosaur"
+  "sorihan1988": {
+    id: "sorihan1988",
+    email: "sori@sorihan.com",
+    password: "1234"
   },
   "user2RandomID": {
     id: "user2RandomID",
@@ -61,6 +61,14 @@ app.get('/register', (req, res) => {
     user: null
   };
   res.render('register', templateVars);
+});
+
+// LOGIN
+app.get('/login', (req, res) => {
+  const templateVars = {
+    user: null
+  };
+  res.render('login', templateVars);
 });
 
 // /URLS
@@ -117,13 +125,20 @@ app.get("/u/:shortURL", (req, res) => {
 
 // LOGIN / LOGOUT 🔑
 app.post("/login", (req, res) => {
-  const { username } = req.body;
-  res.cookie('user_id', username)
+const email = req.body.email;
+const password = req.body.password;
+if(emailExists(users, email) && passwordMatching(users, password)) {
+  res.cookie('user_id', fetchUserID(users, email));
   res.redirect(`/urls`);
+}
+res.sendStatus(403);
 });
+
 app.post("/logout", (req, res) => {
   res.clearCookie('user_id'); //, {path: '/'}
   res.redirect(`/urls`);
+
+
 });
 
 // /REGISTER
