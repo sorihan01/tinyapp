@@ -8,9 +8,12 @@ const PORT = 8080;
 
 const bodyParser = require("body-parser");
 const morgan = require('morgan');
+const cookieParser = require('cookie-parser')
 app.use(bodyParser.urlencoded({ extended: true })); //formats the form POST requests
 app.set("view engine", "ejs");
 app.use(morgan('dev'));
+app.use(cookieParser());
+
 
 
 
@@ -34,7 +37,8 @@ const generateRandomString = () => {
 // 🟩 get /urls...
 
 app.get('/urls', (req, res) => {
-  const templateVars = { urls: urlDatabase };
+  const templateVars = { urls: urlDatabase,
+  username: req.cookies["username"] };
   res.render('urls_index', templateVars);
 });
 app.get("/urls/new", (req, res) => {
@@ -48,14 +52,12 @@ app.get("/urls/new", (req, res) => {
 app.post("/urls", (req, res) => {
   const shortURL = generateRandomString();
   urlDatabase[shortURL] = req.body.longURL;
-  // console.log(urlDatabase); // log updated object
   res.redirect(`/urls/${shortURL}`);
 });
 // user clicks on DELETE button
 app.post("/urls/:shortURL/delete", (req, res) => {
   const { shortURL } = req.params
   delete urlDatabase[shortURL]
-  // console.log(urlDatabase); // log updated object
   res.redirect(`/urls`);
 });
 // user clicks on UPDATE button
@@ -64,7 +66,17 @@ app.post("/urls/:shortURL/update", (req, res) => {
   const { shortURL } = req.params;
   //update the key value with the new body
   urlDatabase[shortURL] = req.body.longURL;
-  // console.log(urlDatabase); // log updated object
+  res.cookie
+  res.redirect(`/urls`);
+});
+
+// 🔑 🔑 🔑  Login POST
+
+app.post("/login", (req, res) => {
+  const { username } = req.body;
+  res.cookie('cookieKey', username) // don't fully understand how this works
+  // console.log('Cookie: ' + req.cookies.username);
+  // res.send('cookie set')
   res.redirect(`/urls`);
 });
 
@@ -84,8 +96,6 @@ app.get("/u/:shortURL", (req, res) => {
   const longURL = urlDatabase[req.params.shortURL];
   res.redirect(longURL);
 });
-
-
 
 
 
