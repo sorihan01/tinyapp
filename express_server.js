@@ -36,7 +36,7 @@ const generateRandomString = () => {
 
 
 
-// 🔑 🔑 🔑  Login POST
+// 🔑 🔑 🔑  Login/ Logout POST
 
 app.post("/login", (req, res) => {
   const { username } = req.body;
@@ -46,19 +46,25 @@ app.post("/login", (req, res) => {
   res.redirect(`/urls`);
 });
 
-
+app.post("/logout", (req, res) => {
+  //we want to clear the cookie for username
+  res.clearCookie('username', {path: '/'});
+  res.redirect(`/urls`);
+});
 
 
 /*  ❕ keep in mind that routes should be ordered from most specific to least specific ❕  */
 // 🟩 get /urls...
 
 app.get('/urls', (req, res) => {
-  const templateVars = { urls: urlDatabase,
-  username: req.cookies["username"] };
+  const templateVars = {
+    urls: urlDatabase,
+    username: req.cookies["username"]
+  };
   res.render('urls_index', templateVars);
 });
 app.get("/urls/new", (req, res) => {
-  const templateVars = {username: req.cookies['username']}
+  const templateVars = { username: req.cookies['username'] }
   res.render("urls_new", templateVars);
 });
 
@@ -92,9 +98,11 @@ app.post("/urls/:shortURL/update", (req, res) => {
 app.get('/urls/:shortURL', (req, res) => {
 
   if (req.params.shortURL in urlDatabase) {
-    const templateVars = { shortURL: req.params.shortURL,
+    const templateVars = {
+      shortURL: req.params.shortURL,
       longURL: urlDatabase[req.params.shortURL],
-      username: req.cookies["username"] };
+      username: req.cookies["username"]
+    };
     res.render('urls_show', templateVars);
   } else {
     //if the shortURL does not exist, redirects to form
