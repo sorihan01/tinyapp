@@ -12,13 +12,12 @@
       </div>
     </div>
 
-
     <% if (username) { %>
-      <div style="margin-right: 5px;">Logged in as <%= username %>
+      <form class="form-inline" action="/logout" method="POST">
+        <div style="margin-right: 7px;">Logged in as <%= username %> <!-- = render this var on browser-->
+          <button type="submit" class="btn btn-outline-primary" style= "padding: 0.2em; margin: 0.2em">Log Out</button>
       </div>
       <% } else { %>
-
-
 
         <form class="form-inline" action="/login" method="POST">
           <input class="form-control" type="text" name="username" placeholder="Username"
