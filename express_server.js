@@ -17,6 +17,7 @@ app.use(cookieParser());
 
 
 
+
 // 🌍 GLOBAL SCOPE VARIABLES
 // object placeholder of pre-loaded URLs
 
@@ -34,27 +35,24 @@ const generateRandomString = () => {
 };
 
 
+//  ❗️ routes should be ordered from most specific to least specific ❗️
 
 
-// 🔑 🔑 🔑  Login/ Logout POST
+
+// 🔑  LOGIN / LOGOUT 🔑 
 
 app.post("/login", (req, res) => {
   const { username } = req.body;
-  res.cookie('username', username) // don't fully understand how this works
-  //I want to console.log cookie
-  console.log(req.cookies)
+  res.cookie('username', username)
   res.redirect(`/urls`);
 });
-
 app.post("/logout", (req, res) => {
-  //we want to clear the cookie for username
   res.clearCookie('username', {path: '/'});
   res.redirect(`/urls`);
 });
 
 
-/*  ❕ keep in mind that routes should be ordered from most specific to least specific ❕  */
-// 🟩 get /urls...
+// 📗  get 📗
 
 app.get('/urls', (req, res) => {
   const templateVars = {
@@ -69,7 +67,7 @@ app.get("/urls/new", (req, res) => {
 });
 
 
-// 🟥  post 
+// ✏️  post ✏️
 
 // user submits longURL
 app.post("/urls", (req, res) => {
