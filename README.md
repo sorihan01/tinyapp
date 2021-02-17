@@ -19,7 +19,7 @@ so that I can learn what content they like.
  
 - ## if user is logged in:
 - [](Minor) redirect to /urls
-- []ff user is not logged in:
+- []if user is not logged in:
 - [](Minor) redirect to /login
 
 
@@ -29,13 +29,13 @@ so that I can learn what content they like.
 - []returns HTML with:
 - []the site header (see Display Requirements above)
 - []a list (or table) of URLs the user has created, each list item - containing:
-- a short URL
-- []the short URL's matching long URL
-- []an edit button which makes a GET request to /urls/:id
-- []a delete button which makes a POST request to /urls/:id/delete
+- [x]a short URL
+- [x]the short URL's matching long URL
+- [x]an edit button which makes a GET request to /urls/:id
+- [x]a delete button which makes a POST request to /urls/:id/delete
 - [](Stretch) the date the short URL was created
 - [](Stretch) the number of times the short URL was visited
-- [](stretch) the number number of unique visits for the short URL
+- [](stretch) the number of unique visits for the short URL
 - [](Minor) a link to "Create a New Short Link" which makes a GET - request to /urls/new
 - []if user is not logged in:
 - []returns HTML with a relevant error message
@@ -47,7 +47,7 @@ so that I can learn what content they like.
 - returns HTML with:
 - []the site header (see Display Requirements above)
 - []a form which contains:
-- []a text input field for the original (long) URL
+- [x]a text input field for the original (long) URL
 - []a submit button which makes a POST request to /urls
 - []if user is not logged in:
 - []redirects to the /login page
