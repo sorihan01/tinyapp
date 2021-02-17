@@ -14,9 +14,9 @@ app.set("view engine", "ejs");
 app.use(morgan('dev'));
 app.use(cookieParser());
 
+// helper functions
 
-
-
+const {generateRandomString, emailExists, passwordMatching, fetchUser} = require('./helpers/userHelpers');
 
 // 🌍 GLOBAL SCOPE VARIABLES
 // object placeholder of pre-loaded URLs
@@ -25,18 +25,6 @@ const urlDatabase = {
   "b2xVn2": "http://www.lighthouselabs.ca",
   "9sm5xK": "http://www.google.com"
 };
-
-// function: generates random key
-
-const generateRandomString = () => {
-  const crypto = require("crypto");
-  const id = crypto.randomBytes(3).toString('hex');
-  return id;
-};
-
-
-
-
 
 // 🔑  LOGIN / LOGOUT 🔑 
 
@@ -55,61 +43,100 @@ const users = {
   }
 }
 
+// LOGIN / LOGOUT post 
+
 app.post("/login", (req, res) => {
   const { username } = req.body;
-  res.cookie('username', username) //should it be user_id?
+  res.cookie('user_id', username)
   res.redirect(`/urls`);
 });
 
 app.post("/logout", (req, res) => {
-  res.clearCookie('username', {path: '/'});
+  res.clearCookie('user_id'); //, {path: '/'}
   res.redirect(`/urls`);
 });
 
+// REGISTER get and post
+
+app.get('/', (req, res) => {
+  res.send('please log in')
+});
+
+
 app.get('/register', (req, res) => {
-  const id = req.cookies['user_id'];
-  const user = users[id];
+  // const isLoggedIn = req.cookies.user_id ? true : false ;
+  // const id = req.cookie['user_id'];
+  // const user = users[id];
   const templateVars = {
-    urls: urlDatabase,
-    username: user,
-    email: user.email
+    // user_id: null,
+    user: null
+    // urls: urlDatabase,
+    // email: user.email,
+    // isLoggedIn,
   };
   res.render('register', templateVars);
 });
 
 app.post("/register", (req, res) => {
   const userID = generateRandomString();
+  res.cookie('user_id', userID); //  res.cookie('user_id', userID);
   const email = req.body.email;
   const password = req.body.password;
-users[userID] = {id: userID, email, password}
-res.cookie('user_id', userID);
+  users[userID] = {id: userID, email, password}
+  console.log(userID)
+  console.log()
+  console.log(users)
+  //check if email exists
+  //if not add the new user data to the database
+  //redirect them to /urls if everything is ok
+  // req.cookie.user_id = userID; 
 res.redirect(`/urls`);
 });
+
 
 //  ❗️ routes should be ordered from most specific to least specific ❗️
 
 // 📗  get 📗
 
 app.get('/urls', (req, res) => {
+
+  console.log(req.cookies)
+  // const isLoggedIn = req.cookies.user_id ? true : false ;
+
+if(req.cookies) {
+
   const id = req.cookies['user_id'];
   const user = users[id];
   const templateVars = {
     urls: urlDatabase,
-    username: user,
-    email: user.email
+    // email: user['email'],
+    user_id: id,
+    user,
+    // isLoggedIn
   };
   res.render('urls_index', templateVars);
+} else {
+  res.send('no email')
+}
+
+
 });
 app.get("/urls/new", (req, res) => {
+  // const isLoggedIn = req.cookies.user_id ? true : false ;
   const id = req.cookies['user_id'];
-  const email = users[id].email;
+  const user = users[id];
   const templateVars = {
-    username: user,
-    email: email
-
+    // email: user.email,
+    // isLoggedIn,
+    user
   };
   res.render("urls_new", templateVars);
 });
+
+
+// when using pre-stored user, I can log in
+// I can't seem to load page if email of user doesn't exist
+
 
 // ✏️  post ✏️
 
@@ -138,14 +165,16 @@ app.post("/urls/:shortURL/update", (req, res) => {
 
 /* ❇️  specific shortURL GET*/
 app.get('/urls/:shortURL', (req, res) => {
+  // const isLoggedIn = req.cookies.user_id ? true : false ;
   if (req.params.shortURL in urlDatabase) {
     const id = req.cookies['user_id'];
     const user = users[id];
     const templateVars = {
       shortURL: req.params.shortURL,
       longURL: urlDatabase[req.params.shortURL],
-      username: user,
-      email: user.email
+      user
+      // email: user.email,
+      // isLoggedIn
     };
     res.render('urls_show', templateVars);
   } else {
@@ -157,8 +186,7 @@ app.get("/u/:shortURL", (req, res) => {
   res.redirect(longURL);
 });
 
-
-
+// all the gets together and posts together
 
 
 app.listen(PORT, () => { console.log(`(ﾉ◕ヮ◕)ﾉ*:･ﾟ✧ tinyapp is running on PORT: ${PORT}`) });
