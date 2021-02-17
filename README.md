@@ -14,17 +14,17 @@ so that I can learn what content they like.
 - []if a user is not logged in, the header shows:
 - []a link to the login page (/login)
 - []a link to the registration page (/register)
-- 
-- # Behaviour Requirements GET /
-- 
+
+ # Behaviour Requirements GET /
+ 
 - ## if user is logged in:
 - [](Minor) redirect to /urls
 - []ff user is not logged in:
 - [](Minor) redirect to /login
-- 
-- 
-- # GET /urls
-- 
+
+
+ # GET /urls
+ 
 - ## if user is logged in:
 - []returns HTML with:
 - []the site header (see Display Requirements above)
@@ -39,11 +39,11 @@ so that I can learn what content they like.
 - [](Minor) a link to "Create a New Short Link" which makes a GET - request to /urls/new
 - []if user is not logged in:
 - []returns HTML with a relevant error message
-- 
-- 
-- #GET /urls/new
-- 
-- ## if user is logged in:
+
+
+ # GET /urls/new
+ 
+ ## if user is logged in:
 - returns HTML with:
 - []the site header (see Display Requirements above)
 - []a form which contains:
@@ -51,11 +51,11 @@ so that I can learn what content they like.
 - []a submit button which makes a POST request to /urls
 - []if user is not logged in:
 - []redirects to the /login page
-- 
-- 
-- #GET /urls/:id
-- 
-- ## if user is logged in and owns the URL for the given ID:
+ 
+ 
+ #GET /urls/:id
+ 
+ ## if user is logged in and owns the URL for the given ID:
 - returns HTML with:
 - []the site header (see Display Requirements above)
 - []the short URL (for the given ID)
@@ -71,25 +71,25 @@ so that I can learn what content they like.
 - []returns HTML with a relevant error message
 - []if user is logged it but does not own the URL with the given ID:
 - []returns HTML with a relevant error message
-- 
-- # GET /u/:id
-- 
+ 
+ # GET /u/:id
+ 
 - ## if URL for the given ID exists:
 - []redirects to the corresponding long URL
 - []if URL for the given ID does not exist:
 - [](Minor) returns HTML with a relevant error message
-- 
+ 
 - # POST /urls
-- 
-- ## if user is logged in:
+ 
+ ## if user is logged in:
 - []generates a short URL, saves it, and associates it with the user
 - []redirects to /urls/:id, where :id matches the ID of the newly - saved []URL
 - []if user is not logged in:
 - [](Minor) returns HTML with a relevant error message
-- 
-- # POST /urls/:id
-- 
-- ## if user is logged in and owns the URL for the given ID:
+ 
+ # POST /urls/:id
+ 
+ ## if user is logged in and owns the URL for the given ID:
 - []updates the URL
 - []redirects to /urls
 - []if user is not logged in:
@@ -104,19 +104,19 @@ so that I can learn what content they like.
 - [](Minor) returns HTML with a relevant error message
 - []if user is logged it but does not own the URL for the given ID:
 - [](Minor) returns HTML with a relevant error message
-- 
-- # GET /login
-- 
-- ## if user is logged in:
+ 
+ # GET /login
+ 
+ ## if user is logged in:
 - [](Minor) redirects to /urls
 - []if user is not logged in:
 - []returns HTML with:
 - []a form which contains:
 - []input fields for email and password
 - []submit button that makes a POST request to /login
-- 
-- GET /register
-- 
+ 
+ GET /register
+ 
 - []## if user is logged in:
 - [](Minor) redirects to /urls
 - []if user is not logged in:
@@ -124,18 +124,18 @@ so that I can learn what content they like.
 - []a form which contains:
 - []input fields for email and password
 - []a register button that makes a POST request to /register
-- 
-- #POST /login
-- 
-- ## if email and password params match an existing user:
+ 
+ #POST /login
+ 
+ ## if email and password params match an existing user:
 - []sets a cookie
 - []redirects to /urls
 - []if email and password params don't match an existing user:
 - []returns HTML with a relevant error message
-- 
-- # POST /register
-- 
-- ## if email or password are empty:
+ 
+ # POST /register
+ 
+ ## if email or password are empty:
 - []returns HTML with a relevant error message
 - []if email already exists:
 - []returns HTML with a relevant error message
@@ -144,8 +144,8 @@ so that I can learn what content they like.
 - []encrypts the new user's password with bcrypt
 - []sets a cookie
 - []redirects to /urls
-- 
-- # POST /logout
-- 
-- ## deletes cookie
+ 
+ # POST /logout
+ 
+ ## deletes cookie
 - []redirects to /urls
