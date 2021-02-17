@@ -35,11 +35,25 @@ const generateRandomString = () => {
 };
 
 
-//  ❗️ routes should be ordered from most specific to least specific ❗️
 
 
 
 // 🔑  LOGIN / LOGOUT 🔑 
+
+// users object
+
+const users = { 
+  "userRandomID": {
+    id: "userRandomID", 
+    email: "user@example.com", 
+    password: "purple-monkey-dinosaur"
+  },
+ "user2RandomID": {
+    id: "user2RandomID", 
+    email: "user2@example.com", 
+    password: "dishwasher-funk"
+  }
+}
 
 app.post("/login", (req, res) => {
   const { username } = req.body;
@@ -50,7 +64,22 @@ app.post("/logout", (req, res) => {
   res.clearCookie('username', {path: '/'});
   res.redirect(`/urls`);
 });
+app.post("/register", (req, res) => {
+  const email = req.body.email;
+  const password = req.body.password;
+const userID = generateRandomString();
+users[userID] = {id: userID, email, password}
+res.cookie('username', userID);
+res.redirect(`/urls`);
+});
+app.get('/register', (req, res) => {
+  const templateVars = {
+    username: req.cookies["username"]
+  };
+  res.render('register', templateVars);
+});
 
+//  ❗️ routes should be ordered from most specific to least specific ❗️
 
 // 📗  get 📗
 
@@ -65,7 +94,6 @@ app.get("/urls/new", (req, res) => {
   const templateVars = { username: req.cookies['username'] }
   res.render("urls_new", templateVars);
 });
-
 
 // ✏️  post ✏️
 
@@ -92,9 +120,8 @@ app.post("/urls/:shortURL/update", (req, res) => {
 });
 
 
-/* ❇️ specific shortURL GET*/
+/* ❇️  specific shortURL GET*/
 app.get('/urls/:shortURL', (req, res) => {
-
   if (req.params.shortURL in urlDatabase) {
     const templateVars = {
       shortURL: req.params.shortURL,
@@ -103,7 +130,6 @@ app.get('/urls/:shortURL', (req, res) => {
     };
     res.render('urls_show', templateVars);
   } else {
-    //if the shortURL does not exist, redirects to form
     res.send('this short URL does not exist! 🤷🏽‍♂️'); //TODO redirect button
   }
 });
