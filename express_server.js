@@ -129,9 +129,14 @@ app.post("/logout", (req, res) => {
 // /REGISTER
 app.post("/register", (req, res) => {
   const userID = generateRandomString();
-  res.cookie('user_id', userID);
   const email = req.body.email;
   const password = req.body.password;
+
+  if (emailExists(users, email) || email === '' || password === '' ) {
+    res.sendStatus(400);
+  }
+
+  res.cookie('user_id', userID);
   users[userID] = { id: userID, email, password }
 
   // console.log(userID)
