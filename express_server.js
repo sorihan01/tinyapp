@@ -33,6 +33,22 @@ const generateRandomString = () => {
   return id;
 };
 
+
+
+
+// 🔑 🔑 🔑  Login POST
+
+app.post("/login", (req, res) => {
+  const { username } = req.body;
+  res.cookie('username', username) // don't fully understand how this works
+  //I want to console.log cookie
+  console.log(req.cookies)
+  res.redirect(`/urls`);
+});
+
+
+
+
 /*  ❕ keep in mind that routes should be ordered from most specific to least specific ❕  */
 // 🟩 get /urls...
 
@@ -70,22 +86,14 @@ app.post("/urls/:shortURL/update", (req, res) => {
   res.redirect(`/urls`);
 });
 
-// 🔑 🔑 🔑  Login POST
-
-app.post("/login", (req, res) => {
-  const { username } = req.body;
-  res.cookie('cookieKey', username) // don't fully understand how this works
-  // console.log('Cookie: ' + req.cookies.username);
-  // res.send('cookie set')
-  res.redirect(`/urls`);
-});
-
 
 /* ❇️ specific shortURL GET*/
 app.get('/urls/:shortURL', (req, res) => {
 
   if (req.params.shortURL in urlDatabase) {
-    const templateVars = { shortURL: req.params.shortURL, longURL: urlDatabase[req.params.shortURL] };
+    const templateVars = { shortURL: req.params.shortURL,
+      longURL: urlDatabase[req.params.shortURL],
+      username: req.cookies["username"] };
     res.render('urls_show', templateVars);
   } else {
     //if the shortURL does not exist, redirects to form
