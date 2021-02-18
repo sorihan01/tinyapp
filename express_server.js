@@ -9,6 +9,7 @@ const PORT = 8080;
 const bodyParser = require("body-parser");
 const morgan = require('morgan');
 const cookieParser = require('cookie-parser');
+const bcrypt = require('bcrypt');
 app.use(bodyParser.urlencoded({ extended: true })); //formats the form POST requests
 app.set("view engine", "ejs");
 app.use(morgan('dev'));
@@ -37,7 +38,7 @@ const users = { // USER DATABASE
   "sorihan1988": {
     id: "sorihan1988",
     email: "sori@sorihan.com",
-    password: "1234"
+    password: bcrypt.hashSync("1234", 10)
   },
   "user2RandomID": {
     id: "user2RandomID",
@@ -74,9 +75,7 @@ app.get('/login', (req, res) => {
 app.get('/urls', (req, res) => {
   const id = req.cookies['user_id'];
   const user = users[id];
-  console.log(req.cookies);
   let userUrls = getUserUrls(urlDatabase, id);
-  console.log(userUrls);
   if (user) {
     const templateVars = {
       urls: userUrls,
@@ -144,8 +143,10 @@ app.get("/u/:shortURL", (req, res) => {
 app.post("/login", (req, res) => {
   const email = req.body.email;
   const password = req.body.password;
-  if (emailExists(users, email) && passwordMatching(users, password)) {
-    res.cookie('user_id', fetchUserID(users, email));
+  const loginuserID = fetchUserID(users, email);
+  //passwor dcompare is not working. should I keep the helper function?
+  if (emailExists(users, email) && bcrypt.compareSync(password, users[loginuserID].passwords)) {
+    res.cookie('user_id', loginuserID);
     res.redirect(`/urls`);
   } else {
     res.sendStatus(403);
@@ -161,12 +162,14 @@ app.post("/logout", (req, res) => {
 app.post("/register", (req, res) => {
   const userID = generateRandomString();
   const email = req.body.email;
-  const password = req.body.password;
+  const password = bcrypt.hashSync(req.body.password, 10); // this works
+  // console.log('this is password ' + password)
   if (emailExists(users, email) || email === '' || password === '') {
     res.sendStatus(400);
   }
   res.cookie('user_id', userID);
   users[userID] = { id: userID, email, password };
+  // console.log('users in file: ' + users)
   res.redirect(`/urls`);
 });
 
@@ -204,6 +207,7 @@ app.post("/urls/:shortURL/update", (req, res) => {
     res.sendStatus(404);
   }
 });
+
 
 
 

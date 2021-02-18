@@ -82,9 +82,9 @@ so that I can learn what content they like.
 - # POST /urls
  
  ## if user is logged in:
-- []generates a short URL, saves it, and associates it with the user
-- []redirects to /urls/:id, where :id matches the ID of the newly - saved []URL
-- []if user is not logged in:
+- [x]generates a short URL, saves it, and associates it with the user
+- [x]redirects to /urls/:id, where :id matches the ID of the newly - saved []URL
+- [x]if user is not logged in:
 - [](Minor) returns HTML with a relevant error message
  
  # POST /urls/:id
