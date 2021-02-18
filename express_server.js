@@ -166,8 +166,10 @@ app.post("/register", (req, res) => {
   const userID = generateRandomString();
   const email = req.body.email;
   const password = bcrypt.hashSync(req.body.password, 10); // this works
-  if (emailExists(users, email) || email === '' || password === '') {
+  if (email === '' || password === '') {
     res.sendStatus(400);
+  } else if (emailExists(users, email)){
+    res.send('this email already exists!');
   }
   req.session.user_id = userID;
   users[userID] = { id: userID, email, password };
