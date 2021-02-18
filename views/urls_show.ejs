@@ -28,7 +28,7 @@
           <form class="form-inline" action="/urls/<%= shortURL %>/update" method="POST">
             <div class="form-group mb-2">
               <label for="longURL">Update URL:</label>
-              <input class="form-control" type="text" name="longURL" placeholder="http://"
+              <input class="form-control" type="text" name="longURL" placeholder="<%= longURL %> 👈🏽   edit me"
                 style="width: 300px; margin: 1em">
               <!-- name=longURL is important as we reference in the express_server for the new body-->
               <button type="submit" class="btn btn-warning">Update</button>
