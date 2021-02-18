@@ -85,9 +85,9 @@ app.get('/urls', (req, res) => {
       user,
     };
     res.render('urls_index', templateVars);
-  } else {
+  } /*else {*/
     res.send('please LOG-IN or REGISTER to use TinyApp!');
-  }
+  /*}*/
 });
 
 // /URLS/NEW
