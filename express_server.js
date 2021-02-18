@@ -8,12 +8,15 @@ const PORT = 8080;
 
 const bodyParser = require("body-parser");
 const morgan = require('morgan');
-const cookieParser = require('cookie-parser');
+var cookieSession = require('cookie-session')
 const bcrypt = require('bcrypt');
 app.use(bodyParser.urlencoded({ extended: true })); //formats the form POST requests
 app.set("view engine", "ejs");
 app.use(morgan('dev'));
-app.use(cookieParser());
+app.use(cookieSession({
+  name: 'session',
+  keys: ['hamilton', 'biminibonboulash']
+}))
 
 // helper functions
 
@@ -73,7 +76,7 @@ app.get('/login', (req, res) => {
 
 // USER /URLS
 app.get('/urls', (req, res) => {
-  const id = req.cookies['user_id'];
+  const id = req.session.user_id;
   const user = users[id];
   let userUrls = getUserUrls(urlDatabase, id);
   if (user) {
@@ -89,10 +92,10 @@ app.get('/urls', (req, res) => {
 
 // /URLS/NEW
 app.get("/urls/new", (req, res) => {
-  const id = req.cookies['user_id'];
+  const id = req.session.user_id;
   const user = users[id];
   if (user) {
-    const id = req.cookies['user_id'];
+    // const id = req.cookies['user_id'];
     const user = users[id];
     const templateVars = {
       user
@@ -105,7 +108,7 @@ app.get("/urls/new", (req, res) => {
 
 // SHOW SPECIFIC URL
 app.get('/urls/:shortURL', (req, res) => {
-  const id = req.cookies['user_id'];
+  const id = req.session.user_id;
   const user = users[id];
   const reqShortURL = req.params.shortURL
   if (urlDatabase[reqShortURL].userID === id) {
@@ -127,12 +130,10 @@ app.get('/urls/:shortURL', (req, res) => {
 // REDIRECT TO ORIGINAL LONG-URL PAGE
 app.get("/u/:shortURL", (req, res) => {
   const shortURL = urlDatabase[req.params.shortURL];
-  console.log('line 130 shortURL: ' + req.params.shortURL) //shows as 
   if (!shortURL) {
     res.send('this short URL does not exist!');
   } else {
     const longURL = shortURL.longURL;
-    console.log('line135 long URL: ' + longURL)
     res.redirect(longURL);
   }
 });
@@ -148,8 +149,7 @@ app.post("/login", (req, res) => {
   const password = req.body.password;
   const loginUserID = fetchUserID(users, email);
   if (emailExists(users, email) && bcrypt.compareSync(password, users[loginUserID].password)) {
-    console.log(users[loginUserID].password)
-    res.cookie('user_id', loginUserID);
+    req.session.user_id = loginUserID;
     res.redirect(`/urls`);
   } else {
     res.sendStatus(403);
@@ -157,7 +157,7 @@ app.post("/login", (req, res) => {
 });
 
 app.post("/logout", (req, res) => {
-  res.clearCookie('user_id'); //, {path: '/'}
+  req.session = null;
   res.redirect(`/login`);
 });
 
@@ -166,13 +166,11 @@ app.post("/register", (req, res) => {
   const userID = generateRandomString();
   const email = req.body.email;
   const password = bcrypt.hashSync(req.body.password, 10); // this works
-  // console.log('this is password ' + password)
   if (emailExists(users, email) || email === '' || password === '') {
     res.sendStatus(400);
   }
-  res.cookie('user_id', userID);
+  req.session.user_id = userID;
   users[userID] = { id: userID, email, password };
-  // console.log('users in file: ' + users)
   res.redirect(`/urls`);
 });
 
@@ -183,16 +181,15 @@ app.post("/urls", (req, res) => {
   if (!reqLongURL.startsWith('http')) {
     reqLongURL = `http://${reqLongURL}`;
   }
-  const id = req.cookies['user_id'];
+  const id = req.session.user_id;
   const genShortURL = generateRandomString();
   urlDatabase[genShortURL] = { longURL: reqLongURL, userID: id };
-  console.log(urlDatabase)
   res.redirect(`/urls/${genShortURL}`);
 });
 
 // DELETE EXISTING URL
 app.post("/urls/:shortURL/delete", (req, res) => {
-  const id = req.cookies['user_id'];
+  const id = req.session.user_id;
   const { shortURL } = req.params;
   if (id === urlDatabase[shortURL].userID) {
     delete urlDatabase[shortURL];
@@ -205,12 +202,11 @@ app.post("/urls/:shortURL/delete", (req, res) => {
 // UPDATE EXISTING URL
 app.post("/urls/:shortURL/update", (req, res) => {
   const longURL = req.body.longURL;
-  const id = req.cookies['user_id'];
+  const id = req.session.user_id;
   const { shortURL } = req.params;
   if (id === urlDatabase[shortURL].userID) {
     urlDatabase[shortURL] = { longURL, userID: id };
-    console.log(urlDatabase)
-    res.cookie;
+    // res.cookie;
     res.redirect(`/urls`);
   } else {
     res.sendStatus(404);
