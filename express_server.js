@@ -8,7 +8,7 @@ const PORT = 8080;
 
 const bodyParser = require("body-parser");
 const morgan = require('morgan');
-const cookieParser = require('cookie-parser')
+const cookieParser = require('cookie-parser');
 app.use(bodyParser.urlencoded({ extended: true })); //formats the form POST requests
 app.set("view engine", "ejs");
 app.use(morgan('dev'));
@@ -44,14 +44,14 @@ const users = { // USER DATABASE
     email: "user2@example.com",
     password: "1234"
   }
-}
+};
 
 
 // 📗📗📗 GET
 
 // HOME
 app.get('/', (req, res) => {
-  res.redirect('login')
+  res.redirect('login');
 });
 
 // REGISTER
@@ -74,9 +74,9 @@ app.get('/login', (req, res) => {
 app.get('/urls', (req, res) => {
   const id = req.cookies['user_id'];
   const user = users[id];
-  console.log(req.cookies)
+  console.log(req.cookies);
   let userUrls = getUserUrls(urlDatabase, id);
-  console.log(userUrls)
+  console.log(userUrls);
   if (user) {
     const templateVars = {
       urls: userUrls,
@@ -84,7 +84,7 @@ app.get('/urls', (req, res) => {
     };
     res.render('urls_index', templateVars);
   } else {
-    res.send('please LOG-IN or REGISTER to use TinyApp!')
+    res.send('please LOG-IN or REGISTER to use TinyApp!');
   }
 });
 
@@ -100,7 +100,7 @@ app.get("/urls/new", (req, res) => {
     };
     res.render("urls_new", templateVars);
   } else {
-    res.redirect(`/login`)
+    res.redirect(`/login`);
   }
 });
 
@@ -120,14 +120,19 @@ app.get('/urls/:shortURL', (req, res) => {
       res.send('this short URL does not exist! 🤷🏽‍♂️'); //TODO redirect button
     }
   } else {
-    res.send('this URL does not belong to you 🙅🏻‍♂️')
+    res.send('this URL does not belong to you 🙅🏻‍♂️');
   }
 });
 
 // REDIRECT TO ORIGINAL PAGE
 app.get("/u/:shortURL", (req, res) => {
-  const longURL = urlDatabase[req.params.shortURL].longURL;
-  res.redirect(longURL);
+  const shortURL = urlDatabase[req.params.shortURL];
+  if (!shortURL) {
+    res.send('this short URL does not exist!');
+  } else {
+    const longURL = urlDatabase[req.params.shortURL].longURL;
+    res.redirect(longURL);
+  }
 });
 
 
@@ -161,7 +166,7 @@ app.post("/register", (req, res) => {
     res.sendStatus(400);
   }
   res.cookie('user_id', userID);
-  users[userID] = { id: userID, email, password }
+  users[userID] = { id: userID, email, password };
   res.redirect(`/urls`);
 });
 
@@ -170,16 +175,16 @@ app.post("/urls", (req, res) => {
   const longURL = req.body.longURL;
   const id = req.cookies['user_id'];
   const shortURL = generateRandomString();
-  urlDatabase[shortURL] = {longURL, userID: id};
+  urlDatabase[shortURL] = { longURL, userID: id };
   res.redirect(`/urls/${shortURL}`);
 });
 
 // DELETE EXISTING URL
 app.post("/urls/:shortURL/delete", (req, res) => {
   const id = req.cookies['user_id'];
-  const { shortURL } = req.params
-  if(id === urlDatabase[shortURL].userID) {
-    delete urlDatabase[shortURL]
+  const { shortURL } = req.params;
+  if (id === urlDatabase[shortURL].userID) {
+    delete urlDatabase[shortURL];
     res.redirect(`/urls`);
   } else {
     res.sendStatus(404);
@@ -191,10 +196,10 @@ app.post("/urls/:shortURL/update", (req, res) => {
   const longURL = req.body.longURL;
   const id = req.cookies['user_id'];
   const { shortURL } = req.params;
-  if(id === urlDatabase[shortURL].userID) {
-  urlDatabase[shortURL] = {longURL, userID: id};
-  res.cookie
-  res.redirect(`/urls`);
+  if (id === urlDatabase[shortURL].userID) {
+    urlDatabase[shortURL] = { longURL, userID: id };
+    res.cookie;
+    res.redirect(`/urls`);
   } else {
     res.sendStatus(404);
   }
@@ -205,4 +210,6 @@ app.post("/urls/:shortURL/update", (req, res) => {
 
 
 
-app.listen(PORT, () => { console.log(`(ﾉ◕ヮ◕)ﾉ*:･ﾟ✧ tinyapp is running on PORT: ${PORT}`) });
+app.listen(PORT, () => {
+  console.log(`(ﾉ◕ヮ◕)ﾉ*:･ﾟ✧ tinyapp is running on PORT: ${PORT}`);
+});

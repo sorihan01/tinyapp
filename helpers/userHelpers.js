@@ -24,7 +24,7 @@ const passwordMatching = (database, password) => {
 const fetchUserID = (database, email) => {
   for (let key in database) {
     if (database[key]["email"] === email) {
-      return database[key].id
+      return database[key].id;
     }
   }
 };
@@ -33,10 +33,10 @@ const getUserUrls = (urlDatabase, userID) => {
   let userUrls = {};
   for (let key in urlDatabase) {
     if (urlDatabase[key].userID === userID) {
-      userUrls[key] = urlDatabase[key]
+      userUrls[key] = urlDatabase[key];
     }
   }
-  return userUrls
+  return userUrls;
 };
 
 module.exports = { generateRandomString, emailExists, passwordMatching, fetchUserID, getUserUrls };
