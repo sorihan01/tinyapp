@@ -47,14 +47,3 @@ describe('getUserUrls', () => {
     assert.equal(user, expectedOutput);
   });
 });
-
-describe('emailExists', () => {
-  it('should return true if email exists', () => {
-    const user = emailExists(testUsers, "user2@example.com");
-    assert.equal(user, true);
-  });
-  it('should return undefined if email does not exist', () => {
-    const user = emailExists(testUsers, "cooluser@example.com");
-    assert.equal(user, undefined);
-  });
-});
