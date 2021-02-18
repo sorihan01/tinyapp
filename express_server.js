@@ -17,7 +17,7 @@ app.use(cookieParser());
 
 // helper functions
 
-const { generateRandomString, emailExists, passwordMatching, fetchUserID, getUserUrls } = require('./helpers/userHelpers');
+const { generateRandomString, emailExists, fetchUserID, getUserUrls } = require('./helpers/userHelpers');
 
 
 
@@ -29,21 +29,21 @@ const { generateRandomString, emailExists, passwordMatching, fetchUserID, getUse
 
 const urlDatabase = {
   b6UTxQ: { longURL: "https://www.sorihan.com", userID: "sorihan1988" },
-  i3BoGr: { longURL: "https://www.christiannallyfanclub.ca", userID: "sorihan1988" },
+  i3BoGr: { longURL: "https://www.google.ca", userID: "sorihan1988" },
   'a2f747': { longURL: "https://www.enze.com", userID: "user2RandomID" },
-  '3f0037': { longURL: "https://www.google.ca", userID: "user2RandomID" }
+  '3f0037': { longURL: "https://www.yahoo.ca", userID: "user2RandomID" }
 };
 
 const users = { // USER DATABASE
   "sorihan1988": {
     id: "sorihan1988",
     email: "sori@sorihan.com",
-    password: bcrypt.hashSync("1234", 10)
+    password: '$2b$10$xecpVIvaXwHZN5l.vFIuruv3QffmyI/oi3NtwjrlgfRTq6.X265t.'
   },
   "user2RandomID": {
     id: "user2RandomID",
     email: "user2@example.com",
-    password: "1234"
+    password: '$2b$10$xecpVIvaXwHZN5l.vFIuruv3QffmyI/oi3NtwjrlgfRTq6.X265t.'
   }
 };
 
@@ -107,11 +107,12 @@ app.get("/urls/new", (req, res) => {
 app.get('/urls/:shortURL', (req, res) => {
   const id = req.cookies['user_id'];
   const user = users[id];
-  if (urlDatabase[req.params.shortURL].userID === id) {
-    if (req.params.shortURL in urlDatabase) {
+  const reqShortURL = req.params.shortURL
+  if (urlDatabase[reqShortURL].userID === id) {
+    if (reqShortURL in urlDatabase) {
       const templateVars = {
-        shortURL: req.params.shortURL,
-        longURL: urlDatabase[req.params.shortURL].longURL,
+        shortURL: reqShortURL,
+        longURL: urlDatabase[reqShortURL].longURL,
         user
       };
       res.render('urls_show', templateVars);
@@ -123,13 +124,15 @@ app.get('/urls/:shortURL', (req, res) => {
   }
 });
 
-// REDIRECT TO ORIGINAL PAGE
+// REDIRECT TO ORIGINAL LONG-URL PAGE
 app.get("/u/:shortURL", (req, res) => {
   const shortURL = urlDatabase[req.params.shortURL];
+  console.log('line 130 shortURL: ' + req.params.shortURL) //shows as 
   if (!shortURL) {
     res.send('this short URL does not exist!');
   } else {
-    const longURL = urlDatabase[req.params.shortURL].longURL;
+    const longURL = shortURL.longURL;
+    console.log('line135 long URL: ' + longURL)
     res.redirect(longURL);
   }
 });
@@ -143,10 +146,10 @@ app.get("/u/:shortURL", (req, res) => {
 app.post("/login", (req, res) => {
   const email = req.body.email;
   const password = req.body.password;
-  const loginuserID = fetchUserID(users, email);
-  //passwor dcompare is not working. should I keep the helper function?
-  if (emailExists(users, email) && bcrypt.compareSync(password, users[loginuserID].passwords)) {
-    res.cookie('user_id', loginuserID);
+  const loginUserID = fetchUserID(users, email);
+  if (emailExists(users, email) && bcrypt.compareSync(password, users[loginUserID].password)) {
+    console.log(users[loginUserID].password)
+    res.cookie('user_id', loginUserID);
     res.redirect(`/urls`);
   } else {
     res.sendStatus(403);
@@ -175,11 +178,16 @@ app.post("/register", (req, res) => {
 
 // SUBMIT NEW LONG-URL
 app.post("/urls", (req, res) => {
-  const longURL = req.body.longURL;
+  let reqLongURL = req.body.longURL;
+  //adds http:// to new URL as URL w/o http:// will not redirect properly
+  if (!reqLongURL.startsWith('http')) {
+    reqLongURL = `http://${reqLongURL}`;
+  }
   const id = req.cookies['user_id'];
-  const shortURL = generateRandomString();
-  urlDatabase[shortURL] = { longURL, userID: id };
-  res.redirect(`/urls/${shortURL}`);
+  const genShortURL = generateRandomString();
+  urlDatabase[genShortURL] = { longURL: reqLongURL, userID: id };
+  console.log(urlDatabase)
+  res.redirect(`/urls/${genShortURL}`);
 });
 
 // DELETE EXISTING URL
@@ -201,6 +209,7 @@ app.post("/urls/:shortURL/update", (req, res) => {
   const { shortURL } = req.params;
   if (id === urlDatabase[shortURL].userID) {
     urlDatabase[shortURL] = { longURL, userID: id };
+    console.log(urlDatabase)
     res.cookie;
     res.redirect(`/urls`);
   } else {

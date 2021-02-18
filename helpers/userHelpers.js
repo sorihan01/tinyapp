@@ -1,10 +1,10 @@
 // functions live here
-
-//random string generator
 const crypto = require("crypto");
 
+// generates code for userID and shortURL link
 const generateRandomString = () => crypto.randomBytes(3).toString('hex');
 
+// checks for email in database
 const emailExists = (database, email) => {
   for (let key in database) {
     if (database[key]["email"] === email) {
@@ -13,14 +13,7 @@ const emailExists = (database, email) => {
   }
 };
 
-const passwordMatching = (database, password) => {
-  for (let key in database) {
-    if (database[key]["password"] === password) {
-      return true;
-    }
-  }
-};
-
+// using the req.params.email, we fetch the userID
 const fetchUserID = (database, email) => {
   for (let key in database) {
     if (database[key]["email"] === email) {
@@ -29,6 +22,7 @@ const fetchUserID = (database, email) => {
   }
 };
 
+// Returns only URLS with current userID
 const getUserUrls = (urlDatabase, userID) => {
   let userUrls = {};
   for (let key in urlDatabase) {
@@ -39,4 +33,4 @@ const getUserUrls = (urlDatabase, userID) => {
   return userUrls;
 };
 
-module.exports = { generateRandomString, emailExists, passwordMatching, fetchUserID, getUserUrls };
+module.exports = { generateRandomString, emailExists, fetchUserID, getUserUrls };
