@@ -7,20 +7,36 @@ const generateRandomString = () => crypto.randomBytes(3).toString('hex');
 
 const emailExists = (database, email) => {
   for (let key in database) {
-    return (database[key]["email"] === email) ? true : false;
+    if (database[key]["email"] === email) {
+      return true;
+    }
   }
 };
 
 const passwordMatching = (database, password) => {
   for (let key in database) {
-    return (database[key]["password"] === password) ? true : false;
+    if (database[key]["password"] === password) {
+      return true;
+    }
   }
 };
 
 const fetchUserID = (database, email) => {
   for (let key in database) {
-    return (database[key]["email"] === email) ? database[key].id : false;
+    if (database[key]["email"] === email) {
+      return database[key].id
+    }
   }
 };
 
-module.exports = { generateRandomString, emailExists, passwordMatching, fetchUserID };
+const getUserUrls = (urlDatabase, userID) => {
+  let userUrls = {};
+  for (let key in urlDatabase) {
+    if (urlDatabase[key].userID === userID) {
+      userUrls[key] = urlDatabase[key]
+    }
+  }
+  return userUrls
+};
+
+module.exports = { generateRandomString, emailExists, passwordMatching, fetchUserID, getUserUrls };

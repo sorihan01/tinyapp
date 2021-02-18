@@ -153,10 +153,22 @@ so that I can learn what content they like.
 
 
 
-NEW LOGIN PAGE
+Basic Permission Features
 
-Update the header
-- update header to link to the login and registration page
-- remove login form
-- If no cookie, show register / login link
--else if nothing changes
+- Only registered / logged in users can create new tiny URLS
+- when someone is not logged in, redirect them to login page
+
+- change the structure of urlDatabase
+- when adding to url list, add the userID
+- when accessing the url List, access the specific users URL
+```
+const urlDatabase = {
+  b6UTxQ: { longURL: "https://www.tsn.ca", userID: "aJ48lW" },
+  i3BoGr: { longURL: "https://www.google.ca", userID: "aJ48lW" }
+};
+```
+
+- anyone can visit SHORT URLS
+  - GET /u/:id should work for non users
+
+  

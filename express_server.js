@@ -16,7 +16,7 @@ app.use(cookieParser());
 
 // helper functions
 
-const { generateRandomString, emailExists, passwordMatching, fetchUserID } = require('./helpers/userHelpers');
+const { generateRandomString, emailExists, passwordMatching, fetchUserID, getUserUrls } = require('./helpers/userHelpers');
 
 
 
@@ -26,9 +26,11 @@ const { generateRandomString, emailExists, passwordMatching, fetchUserID } = req
 // 🌍 GLOBAL SCOPE VARIABLES
 // object placeholder of pre-loaded URLs
 
-const urlDatabase = { // URL DATABASE
-  "b2xVn2": "http://www.lighthouselabs.ca",
-  "9sm5xK": "http://www.google.com"
+const urlDatabase = {
+  b6UTxQ: { longURL: "https://www.sorihan.com", userID: "sorihan1988" },
+  i3BoGr: { longURL: "https://www.google.ca", userID: "sorihan1988" },
+  'a2f747': { longURL: "https://www.yahoo.comm", userID: "user2RandomID" },
+  '3f0037': { longURL: "https://www.google.ca", userID: "user2RandomID" }
 };
 
 const users = { // USER DATABASE
@@ -44,8 +46,8 @@ const users = { // USER DATABASE
   }
 }
 
-
-
+// user2@example.com
+// dishwasher-funk
 
 
 // 📗📗📗 GET
@@ -71,29 +73,49 @@ app.get('/login', (req, res) => {
   res.render('login', templateVars);
 });
 
+
+
+
+
 // /URLS
 app.get('/urls', (req, res) => {
-  if (req.cookies) {
-    const id = req.cookies['user_id'];
-    const user = users[id];
+  const id = req.cookies['user_id'];
+  const user = users[id];
+  console.log(req.cookies)
+  let userUrls = getUserUrls(urlDatabase, id);
+  console.log(userUrls)
+  if (user) {
+    // run function getUserUrls(urlDatabase, id)
     const templateVars = {
-      urls: urlDatabase,
+      urls: userUrls,
       user,
     };
+    //templateVars.urls showing as undefined
+    // console.log("app.get console log: " + templateVars.urls)
     res.render('urls_index', templateVars);
   } else {
-    res.send('no email')
+    res.redirect(`/login`)
   }
 });
+
+
+
+
 
 // /URLS/NEW
 app.get("/urls/new", (req, res) => {
   const id = req.cookies['user_id'];
   const user = users[id];
-  const templateVars = {
-    user
-  };
-  res.render("urls_new", templateVars);
+  if (user) {
+    const id = req.cookies['user_id'];
+    const user = users[id];
+    const templateVars = {
+      user
+    };
+    res.render("urls_new", templateVars);
+  } else {
+    res.redirect(`/login`)
+  }
 });
 
 // SHOW SPECIFIC URL
@@ -125,16 +147,16 @@ app.get("/u/:shortURL", (req, res) => {
 
 // LOGIN / LOGOUT 🔑
 app.post("/login", (req, res) => {
-const email = req.body.email;
-const password = req.body.password;
-if(emailExists(users, email) && passwordMatching(users, password)) {
-  res.cookie('user_id', fetchUserID(users, email));
-  // console.log('email: ' + email + ' pswrd: ' + password)
-  res.redirect(`/urls`);
-} else{
-  // console.log('NO USER!! email: ' + email + ' pswrd: ' + password)
-  res.sendStatus(403);
-}
+  const email = req.body.email;
+  const password = req.body.password;
+  if (emailExists(users, email) && passwordMatching(users, password)) {
+    res.cookie('user_id', fetchUserID(users, email));
+    console.log('email: ' + email + ' pswrd: ' + password)
+    res.redirect(`/urls`);
+  } else {
+    console.log('NO USER!! email: ' + email + ' pswrd: ' + password)
+    res.sendStatus(403);
+  }
 });
 
 app.post("/logout", (req, res) => {
@@ -148,7 +170,7 @@ app.post("/register", (req, res) => {
   const email = req.body.email;
   const password = req.body.password;
 
-  if (emailExists(users, email) || email === '' || password === '' ) {
+  if (emailExists(users, email) || email === '' || password === '') {
     res.sendStatus(400);
   }
 
