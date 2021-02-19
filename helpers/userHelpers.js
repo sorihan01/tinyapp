@@ -13,9 +13,10 @@ const getUserByEmail = (database, email) => {
   for (let key in database) {
     if (database[key]['email'] === email) {
       user = database[key];
+      return user;
     }
   }
-  return user;
+  return null;
 };
 
 
