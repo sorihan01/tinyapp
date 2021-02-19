@@ -273,13 +273,15 @@ app.post("/urls/:shortURL/delete", (req, res) => {
 // EDIT EXISTING URL
 app.post("/urls/:shortURL/edit", (req, res) => {
   const userID = req.session.user_id;
-  const { longURL } = req.body;
+  let { longURL } = req.body;
   const { shortURL } = req.params;
   if (userID !== urlDatabase[shortURL].userID) {
     res.status(404).send('You do not have permission to  edit this link');
     return;
   }
-
+  if (!longURL.startsWith('http')) {
+    longURL = `http://${longURL}`;
+  }
   urlDatabase[shortURL] = { longURL, userID };
   res.redirect(`/urls`);
 });
