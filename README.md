@@ -4,8 +4,9 @@ TinyApp is a full stack web application built with Node and Express that allows 
 
 ## Final Product
 
-!["screenshot description"](#)
-!["screenshot description"](#)
+!["Login page"](#)
+!["My URLS page showing your unique TinyURLs"](#)
+!["You can even edit your stored links!"](#)
 
 ## Dependencies
 
@@ -18,25 +19,30 @@ TinyApp is a full stack web application built with Node and Express that allows 
 
 ## Getting Started
 
-- Install all dependencies.
+- Install all dependencies:
 ```
 npm install
 ```
 
-- Run the development web server.
+- Run the development web server:
 ```
 npm start
 ```
 
+- Run TinyApp on your browser:
+```
+http://localhost:8080/
+```
+
+
 ### Known Bugs
 
-- When logging in with an incorrect password, unexpected error is thrown.
+- All known bugs are squished!
 
 ### Upcoming Features:
 
-- [](Stretch) the date the short URL was created
-- [](Stretch) the number of times the short URL was visited
-- [](stretch) the number of unique visits for the short URL
-
+* A log of when the TinyURL was created on your dashboard.
+* The number of visits and unique visits for your TinyURL.
+* A fancy new layout once I learn CSS.
 
  
