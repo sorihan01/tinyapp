@@ -121,7 +121,7 @@ app.get("/urls/new", (req, res) => {
 
   const user = users[userID];
   if (!user) {
-    res.redirect(`/login`); // doesn't match /urls which sends a message
+    res.redirect(`/login`);
     return;
   }
 
@@ -143,7 +143,7 @@ app.get('/urls/:shortURL', (req, res) => {
 
   const user = users[userID];
   if (!user) {
-    res.send('please LOG-IN or REGISTER to use TinyApp!'); // or res.redirect(`/login`)
+    res.send('please LOG-IN or REGISTER to use TinyApp!'); 
     return;
   }
 
