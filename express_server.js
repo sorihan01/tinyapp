@@ -60,15 +60,15 @@ app.get('/', (req, res) => {
 // REGISTER
 app.get('/register', (req, res) => {
   const userID = req.session.user_id;
-if (!userID) {
-  const templateVars = {
-    user: null
-  };
-  res.render('register', templateVars);
-  return;
-}
+  if (!userID) {
+    const templateVars = {
+      user: null
+    };
+    res.render('register', templateVars);
+    return;
+  }
 
-res.redirect('/urls')
+  res.redirect('/urls')
 });
 
 
@@ -76,7 +76,7 @@ res.redirect('/urls')
 // LOGIN
 app.get('/login', (req, res) => {
   const userID = req.session.user_id;
-  if (!userID) {    
+  if (!userID) {
     const templateVars = {
       user: null
     };
@@ -193,12 +193,12 @@ app.post("/login", (req, res) => {
   }
 
   const user = getUserByEmail(users, email);
-  if (!user){
+  if (!user) {
     res.status(403).send('invalid credentials');
     return;
-  } 
+  }
 
-  if(!bcrypt.compareSync(password, user.password)) {
+  if (!bcrypt.compareSync(password, user.password)) {
     res.status(403).send('invalid credentials');
     return;
   }
@@ -224,16 +224,21 @@ app.post("/register", (req, res) => {
   if (email === '' || password === '') {
     res.status(400).send("please check your email or password");
     return;
-  } else if (getUserByEmail(users, email).email) {
+  }
+
+  if(!getUserByEmail(users, email)) {
+    const userID = generateRandomString();
+    req.session.user_id = userID;
+    users[userID] = { userID, email, password };
+    res.redirect(`/urls`);
+  }
+
+  if (getUserByEmail(users, email).email) {
     res.send('this email already exists!');
     return;
   }
-  
-  const userID = generateRandomString();
-  req.session.user_id = userID;
-  users[userID] = { userID, email, password };
 
-  res.redirect(`/urls`);
+  // console.log(password)
 });
 
 
