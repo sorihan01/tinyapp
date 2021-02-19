@@ -30,7 +30,7 @@
           <% for(let url in urls) { %>
             <tr>
               <td>
-                <%= url %>
+                <a href = ' <%=urls[url].longURL%> '><%= url %></a>
               </td>
               <td>
                 <%= urls[url].longURL %>
