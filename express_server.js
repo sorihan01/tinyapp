@@ -226,19 +226,15 @@ app.post("/register", (req, res) => {
     return;
   }
 
-  if(!getUserByEmail(users, email)) {
+  if (!getUserByEmail(users, email)) {
     const userID = generateRandomString();
     req.session.user_id = userID;
     users[userID] = { userID, email, password };
     res.redirect(`/urls`);
   }
 
-  if (getUserByEmail(users, email).email) {
-    res.send('this email already exists!');
-    return;
-  }
-
-  // console.log(password)
+  res.send('this email already exists!');
+  return;
 });
 
 
