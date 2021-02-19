@@ -1,5 +1,5 @@
 const { assert } = require('chai');
-const { fetchUserID, getUserUrls, emailExists } = require('../helpers/userHelpers.js');
+const { getUserByEmail, getUserUrls } = require('../helpers/userHelpers.js');
 
 const testUsers = {
   "userRandomID": {
@@ -21,18 +21,20 @@ const urlDatabase = {
   '3f0037': { longURL: "https://www.yahoo.ca", userID: "userRandomID" }
 };
 
-describe('fetchUserID', () => {
+
+describe('getUserByEmail', () => {
   it('should return a user with valid email', () => {
-    const user = fetchUserID(testUsers, "user@example.com");
+    const user = getUserByEmail(testUsers, "user@example.com").id;
     const expectedOutput = "userRandomID";
     assert.equal(user, expectedOutput);
   });
   it('should return a undefined with an invalid email', () => {
-    const user = fetchUserID(testUsers, "cooluser@example.com");
+    const user = getUserByEmail(testUsers, "cooluser@example.com").id;
     const expectedOutput = undefined;
     assert.equal(user, expectedOutput);
   });
 });
+
 
 describe('getUserUrls', () => {
 
@@ -42,7 +44,7 @@ describe('getUserUrls', () => {
     assert.equal(user, expectedOutput);
   });
   it('should return undefined with unmatching shortURL', () => {
-    const user = getUserUrls(urlDatabase, "userRandomID").b6UTxQ
+    const user = getUserUrls(urlDatabase, "userRandomID").b6UTxQ;
     const expectedOutput = undefined;
     assert.equal(user, expectedOutput);
   });

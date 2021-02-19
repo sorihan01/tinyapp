@@ -7,7 +7,6 @@ const generateRandomString = () => crypto.randomBytes(3).toString('hex');
 
 
 
-
 //retrieves user by email
 const getUserByEmail = (database, email) => {
   let user = {};
@@ -17,7 +16,7 @@ const getUserByEmail = (database, email) => {
     }
   }
   return user;
-}
+};
 
 
 
