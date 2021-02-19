@@ -5,8 +5,13 @@ TinyApp is a full stack web application built with Node and Express that allows 
 ## Final Product
 
 !["Login page"](https://github.com/hansori01/tinyapp/blob/master/docs/TinyUrl01.png?raw=true)
+* Login page
+
 !["My URLS page showing your unique TinyURLs"](https://github.com/hansori01/tinyapp/blob/master/docs/TinyUrl02.png?raw=true)
+* My URLS page showing your unique TinyURLs
+
 !["You can even edit your stored links!"](https://github.com/hansori01/tinyapp/blob/master/docs/TinyUrl03.png?raw=true)
+* You can even edit your stored links!
 
 ## Dependencies
 
