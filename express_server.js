@@ -23,9 +23,8 @@ app.use(cookieSession({
 const { getUserByEmail, generateRandomString, getUserUrls } = require('./helpers/userHelpers');
 
 // 🌍 GLOBAL SCOPE VARIABLES
-// object placeholder of pre-loaded URLs
 
-const urlDatabase = {
+const urlDatabase = { // URL DATABASE
   b6UTxQ: { longURL: "https://www.sorihan.com", userID: "sorihan1988" },
   i3BoGr: { longURL: "https://www.google.ca", userID: "sorihan1988" },
   'a2f747': { longURL: "https://www.enze.com", userID: "user2RandomID" },
@@ -34,12 +33,12 @@ const urlDatabase = {
 
 const users = { // USER DATABASE
   "sorihan1988": {
-    id: "sorihan1988",
+    userID: "sorihan1988",
     email: "sori@sorihan.com",
     password: '$2b$10$xecpVIvaXwHZN5l.vFIuruv3QffmyI/oi3NtwjrlgfRTq6.X265t.'
   },
   "user2RandomID": {
-    id: "user2RandomID",
+    userID: "user2RandomID",
     email: "user2@example.com",
     password: '$2b$10$xecpVIvaXwHZN5l.vFIuruv3QffmyI/oi3NtwjrlgfRTq6.X265t.'
   }
@@ -48,7 +47,7 @@ const users = { // USER DATABASE
 
 
 
-// 📗📗📗 GET
+// 📗 GET
 
 
 // HOME
@@ -60,40 +59,51 @@ app.get('/', (req, res) => {
 
 // REGISTER
 app.get('/register', (req, res) => {
+  const userID = req.session.user_id;
+if (!userID) {
   const templateVars = {
     user: null
   };
   res.render('register', templateVars);
+  return;
+}
+
+res.redirect('/urls')
 });
 
 
 
 // LOGIN
 app.get('/login', (req, res) => {
-  const templateVars = {
-    user: null
-  };
-  res.render('login', templateVars);
+  const userID = req.session.user_id;
+  if (!userID) {    
+    const templateVars = {
+      user: null
+    };
+    res.render('login', templateVars);
+  }
+
+  res.redirect('/urls')
 });
 
 
 
 // USER /URLS
 app.get('/urls', (req, res) => {
-  const id = req.session.user_id;
+  const userID = req.session.user_id;
 
-  if (!id) {
+  if (!userID) {
     res.status(403).send('please LOG-IN or REGISTER to use TinyApp!');
     return;
   }
 
-  const user = users[id];
+  const user = users[userID];
   if (!user) {
-    res.send('please LOG-IN or REGISTER to use TinyApp!'); // or res.redirect(`/login`)
+    res.status(403).send('please LOG-IN or REGISTER to use TinyApp!');
     return;
   }
 
-  let urls = getUserUrls(urlDatabase, id);
+  let urls = getUserUrls(urlDatabase, userID);
   const templateVars = { urls, user, };
   res.render('urls_index', templateVars);
 });
@@ -102,15 +112,16 @@ app.get('/urls', (req, res) => {
 
 // /URLS/NEW
 app.get("/urls/new", (req, res) => {
-  const id = req.session.user_id;
-  if (!id) {
+  const userID = req.session.user_id;
+  if (!userID) {
     res.status(403).send('please LOG-IN or REGISTER to use TinyApp!');
     return;
   }
 
-  const user = users[id];
+  const user = users[userID];
   if (!user) {
     res.redirect(`/login`); // doesn't match /urls which sends a message
+    return;
   }
 
   const templateVars = {
@@ -123,13 +134,13 @@ app.get("/urls/new", (req, res) => {
 
 // SHOW SPECIFIC URL
 app.get('/urls/:shortURL', (req, res) => {
-  const id = req.session.user_id;
-  if (!id) {
+  const userID = req.session.user_id;
+  if (!userID) {
     res.status(403).send('please LOG-IN or REGISTER to use TinyApp!');
     return;
   }
 
-  const user = users[id];
+  const user = users[userID];
   if (!user) {
     res.send('please LOG-IN or REGISTER to use TinyApp!'); // or res.redirect(`/login`)
     return;
@@ -142,7 +153,7 @@ app.get('/urls/:shortURL', (req, res) => {
     return;
   }
 
-  if (urlRecord.userID !== id) {
+  if (urlRecord.userID !== userID) {
     res.send('this URL does not belong to you 🙅🏻‍♂️');
     return;
   }
@@ -151,6 +162,7 @@ app.get('/urls/:shortURL', (req, res) => {
   const templateVars = { shortURL, longURL, user };
   res.render('urls_show', templateVars);
 });
+
 
 
 // REDIRECT TO ORIGINAL LONG-URL PAGE
@@ -167,23 +179,29 @@ app.get("/u/:shortURL", (req, res) => {
 
 
 
-// ✏️ ✏️ ✏️  POST
+// ✏️ POST
 
 
 // LOGIN / LOGOUT 🔑
 app.post("/login", (req, res) => {
   const email = req.body.email;
   const password = req.body.password;
-  const user = getUserByEmail(users, email);
-  const passwordCheck = bcrypt.compareSync(password, user.password);
-  if (!user || !passwordCheck) {
+  if (email === '' || password === '') {
     res.status(403).send('wrong credentials');
     return;
   }
 
-  req.session.user_id = user.id;
+  const user = getUserByEmail(users, email);
+  // if (!user || !bcrypt.compareSync(password, user.password)) {
+  //   res.status(403).send('wrong credentials');
+  //   return;
+  // }
+
+  req.session.user_id = user.userID;
   res.redirect(`/urls`);
 });
+
+
 
 app.post("/logout", (req, res) => {
   req.session = null;
@@ -194,20 +212,21 @@ app.post("/logout", (req, res) => {
 
 // /REGISTER
 app.post("/register", (req, res) => {
-  const userID = generateRandomString();
   const email = req.body.email;
   const password = bcrypt.hashSync(req.body.password, 10);
 
   if (email === '' || password === '') {
     res.status(400).send("please check your email or password");
     return;
-  } else if (getUserByEmail(users, email).email) { //TODO may need to use the new GETUSERBYEMAIL helper function
+  } else if (getUserByEmail(users, email).email) {
     res.send('this email already exists!');
     return;
   }
-
+  
+  const userID = generateRandomString();
   req.session.user_id = userID;
-  users[userID] = { id: userID, email, password };
+  users[userID] = { userID, email, password };
+
   res.redirect(`/urls`);
 });
 
@@ -221,9 +240,9 @@ app.post("/urls", (req, res) => {
     longURL = `http://${longURL}`;
   }
 
-  const id = req.session.user_id;
+  const userID = req.session.user_id;
   const genShortURL = generateRandomString();
-  urlDatabase[genShortURL] = { longURL, userID: id };
+  urlDatabase[genShortURL] = { longURL, userID, };
   res.redirect(`/urls/${genShortURL}`);
 });
 
@@ -231,9 +250,9 @@ app.post("/urls", (req, res) => {
 
 // DELETE EXISTING URL
 app.post("/urls/:shortURL/delete", (req, res) => {
-  const id = req.session.user_id;
+  const userID = req.session.user_id;
   const { shortURL } = req.params;
-  if (id !== urlDatabase[shortURL].userID) {
+  if (userID !== urlDatabase[shortURL].userID) {
     res.sendStatus(404);
     return;
   }
@@ -246,20 +265,17 @@ app.post("/urls/:shortURL/delete", (req, res) => {
 
 // EDIT EXISTING URL
 app.post("/urls/:shortURL/edit", (req, res) => {
-  const id = req.session.user_id;
+  const userID = req.session.user_id;
   const { longURL } = req.body;
   const { shortURL } = req.params;
-  if (id !== urlDatabase[shortURL].userID) {
+  if (userID !== urlDatabase[shortURL].userID) {
     res.status(404).send('You do not have permission to  edit this link');
     return;
   }
 
-  urlDatabase[shortURL] = { longURL, userID: id };
+  urlDatabase[shortURL] = { longURL, userID };
   res.redirect(`/urls`);
 });
-
-
-
 
 
 
