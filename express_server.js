@@ -193,8 +193,6 @@ app.post("/login", (req, res) => {
   }
 
   const user = getUserByEmail(users, email);
-  console.log('user: ' + JSON.stringify(user)); // turns [object object] into string
-
   if (!user){
     res.status(403).send('invalid credentials');
     return;
