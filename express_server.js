@@ -83,13 +83,13 @@ app.get('/urls', (req, res) => {
   const id = req.session.user_id;
 
   if (!id) {
-    res.status(403).send('user ID does not exist');
+    res.status(403).send('please LOG-IN or REGISTER to use TinyApp!');
     return;
   }
 
   const user = users[id];
   if (!user) {
-    res.send('please LOG-IN or REGISTER to use TinyApp!'); // or res.redirect(`/login`) 
+    res.send('please LOG-IN or REGISTER to use TinyApp!'); // or res.redirect(`/login`)
     return;
   }
 
@@ -104,7 +104,7 @@ app.get('/urls', (req, res) => {
 app.get("/urls/new", (req, res) => {
   const id = req.session.user_id;
   if (!id) {
-    res.status(403).send('user ID does not exist');
+    res.status(403).send('please LOG-IN or REGISTER to use TinyApp!');
     return;
   }
 
@@ -125,13 +125,13 @@ app.get("/urls/new", (req, res) => {
 app.get('/urls/:shortURL', (req, res) => {
   const id = req.session.user_id;
   if (!id) {
-    res.status(403).send('user ID does not exist');
+    res.status(403).send('please LOG-IN or REGISTER to use TinyApp!');
     return;
   }
 
   const user = users[id];
   if (!user) {
-    res.send('please LOG-IN or REGISTER to use TinyApp!'); // or res.redirect(`/login`) 
+    res.send('please LOG-IN or REGISTER to use TinyApp!'); // or res.redirect(`/login`)
     return;
   }
 
@@ -147,7 +147,7 @@ app.get('/urls/:shortURL', (req, res) => {
     return;
   }
 
-  const longURL = urlRecord.longURL
+  const longURL = urlRecord.longURL;
   const templateVars = { shortURL, longURL, user };
   res.render('urls_show', templateVars);
 });
@@ -199,7 +199,7 @@ app.post("/register", (req, res) => {
   const password = bcrypt.hashSync(req.body.password, 10);
 
   if (email === '' || password === '') {
-    res.sendStatus(400);
+    res.status(400).send("please check your email or password");
     return;
   } else if (getUserByEmail(users, email).email) { //TODO may need to use the new GETUSERBYEMAIL helper function
     res.send('this email already exists!');
@@ -244,13 +244,13 @@ app.post("/urls/:shortURL/delete", (req, res) => {
 
 
 
-// UPDATE EXISTING URL
-app.post("/urls/:shortURL/update", (req, res) => {
+// EDIT EXISTING URL
+app.post("/urls/:shortURL/edit", (req, res) => {
   const id = req.session.user_id;
   const { longURL } = req.body;
   const { shortURL } = req.params;
   if (id !== urlDatabase[shortURL].userID) {
-    res.sendStatus(404);
+    res.status(404).send('You do not have permission to  edit this link');
     return;
   }
 
@@ -265,5 +265,5 @@ app.post("/urls/:shortURL/update", (req, res) => {
 
 
 app.listen(PORT, () => {
-  console.log(`(ﾉ◕ヮ◕)ﾉ*:･ﾟ✧ tinyapp is running on PORT: ${PORT}`);
+  console.log(`(ﾉ◕ヮ◕)ﾉ*:･ﾟ✧✧✧ TinyApp is running on PORT: ${PORT} ☆☆☆ﾐ(o*･ω･)ﾉ	`);
 });
