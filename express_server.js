@@ -81,6 +81,7 @@ app.get('/login', (req, res) => {
       user: null
     };
     res.render('login', templateVars);
+    return;
   }
 
   res.redirect('/urls')
@@ -192,10 +193,17 @@ app.post("/login", (req, res) => {
   }
 
   const user = getUserByEmail(users, email);
-  // if (!user || !bcrypt.compareSync(password, user.password)) {
-  //   res.status(403).send('wrong credentials');
-  //   return;
-  // }
+  console.log('user: ' + JSON.stringify(user)); // turns [object object] into string
+
+  if (!user){
+    res.status(403).send('invalid credentials');
+    return;
+  } 
+
+  if(!bcrypt.compareSync(password, user.password)) {
+    res.status(403).send('invalid credentials');
+    return;
+  }
 
   req.session.user_id = user.userID;
   res.redirect(`/urls`);
