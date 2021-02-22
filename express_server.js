@@ -46,9 +46,7 @@ const users = { // USER DATABASE
 
 
 
-
 // 📗 GET
-
 
 // HOME
 app.get('/', (req, res) => {
@@ -57,7 +55,7 @@ app.get('/', (req, res) => {
 
 
 
-// REGISTER
+// REGISTER page renders if userId does not exist
 app.get('/register', (req, res) => {
   const userID = req.session.user_id;
   if (!userID) {
@@ -73,7 +71,7 @@ app.get('/register', (req, res) => {
 
 
 
-// LOGIN
+// LOGIN if userID/ cookie does not exist render login page. Redirec to /urls if logged in.
 app.get('/login', (req, res) => {
   const userID = req.session.user_id;
   if (!userID) {
@@ -89,7 +87,7 @@ app.get('/login', (req, res) => {
 
 
 
-// USER /URLS
+// USER /URLS - only logged in users can view this page.
 app.get('/urls', (req, res) => {
   const userID = req.session.user_id;
 
@@ -111,7 +109,7 @@ app.get('/urls', (req, res) => {
 
 
 
-// /URLS/NEW
+// /URLS/NEW - logged in users can create new URLs
 app.get("/urls/new", (req, res) => {
   const userID = req.session.user_id;
   if (!userID) {
@@ -133,7 +131,7 @@ app.get("/urls/new", (req, res) => {
 
 
 
-// SHOW SPECIFIC URL
+//  Logged in users can access their shortURL to edit or visit the page
 app.get('/urls/:shortURL', (req, res) => {
   const userID = req.session.user_id;
   if (!userID) {
@@ -179,11 +177,9 @@ app.get("/u/:shortURL", (req, res) => {
 
 
 
-
 // ✏️ POST
 
-
-// LOGIN / LOGOUT 🔑
+// LOGIN / LOGOUT 🔑 - Checks credential for existing user to log in. Redirects to user's URLs
 app.post("/login", (req, res) => {
   const email = req.body.email;
   const password = req.body.password;
@@ -216,7 +212,7 @@ app.post("/logout", (req, res) => {
 
 
 
-// /REGISTER
+// /REGISTER - Registration is successful if email doesn't exist in database
 app.post("/register", (req, res) => {
   const email = req.body.email;
   const password = bcrypt.hashSync(req.body.password, 10);
@@ -239,7 +235,7 @@ app.post("/register", (req, res) => {
 
 
 
-// SUBMIT NEW LONG-URL
+// SUBMIT NEW LONG-URL - stores new URL in database of user and adds URL prefix if non-existent
 app.post("/urls", (req, res) => {
   let { longURL } = req.body;
 
@@ -255,7 +251,7 @@ app.post("/urls", (req, res) => {
 
 
 
-// DELETE EXISTING URL
+// DELETE EXISTING URL - owner of existing URL can delete their stored URL
 app.post("/urls/:shortURL/delete", (req, res) => {
   const userID = req.session.user_id;
   const { shortURL } = req.params;
@@ -270,11 +266,12 @@ app.post("/urls/:shortURL/delete", (req, res) => {
 
 
 
-// EDIT EXISTING URL
+// EDIT EXISTING URL - owner if URL can edit URL. If no prefix for URL is given adds correct prefix
 app.post("/urls/:shortURL/edit", (req, res) => {
   const userID = req.session.user_id;
   let { longURL } = req.body;
   const { shortURL } = req.params;
+
   if (userID !== urlDatabase[shortURL].userID) {
     res.status(404).send('You do not have permission to  edit this link');
     return;
@@ -282,13 +279,13 @@ app.post("/urls/:shortURL/edit", (req, res) => {
   if (!longURL.startsWith('http')) {
     longURL = `http://${longURL}`;
   }
+
   urlDatabase[shortURL] = { longURL, userID };
   res.redirect(`/urls`);
 });
 
 
 
-
 app.listen(PORT, () => {
   console.log(`(ﾉ◕ヮ◕)ﾉ*:･ﾟ✧✧✧ TinyApp is running on PORT: ${PORT} ☆☆☆ﾐ(o*･ω･)ﾉ	`);
-});
+}); 
